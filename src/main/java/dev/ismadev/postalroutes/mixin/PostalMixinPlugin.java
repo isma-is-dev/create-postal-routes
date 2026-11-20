@@ -2,6 +2,8 @@ package dev.ismadev.postalroutes.mixin;
 
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.LoadingModList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -15,6 +17,9 @@ import java.util.Set;
  */
 public final class PostalMixinPlugin implements IMixinConfigPlugin {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("Create: Postal Routes");
+    private static boolean loggedDecision;
+
     @Override
     public void onLoad(String mixinPackage) {
     }
@@ -26,7 +31,13 @@ public final class PostalMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return isXaeroWorldMapLoaded();
+        boolean loaded = isXaeroWorldMapLoaded();
+        if (!loggedDecision) {
+            loggedDecision = true;
+            LOGGER.info("Xaero's World Map {}; postal map integration {}",
+                loaded ? "found" : "not installed", loaded ? "enabled" : "disabled");
+        }
+        return loaded;
     }
 
     public static boolean isXaeroWorldMapLoaded() {

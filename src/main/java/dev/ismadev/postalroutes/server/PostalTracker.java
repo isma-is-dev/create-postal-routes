@@ -336,7 +336,10 @@ public final class PostalTracker {
         BlockPos pos = port.getBlockPos();
         Vec3 exact = null;
         try {
-            if (port.target != null) {
+            // Only chain-attached frogports have a meaningful position along a route. A
+            // postbox's target is a train station, and the station block is not where the
+            // postbox sits, so those keep their own block position.
+            if (port.target instanceof PackagePortTarget.ChainConveyorFrogportTarget) {
                 Vec3 candidate = port.target.getExactTargetLocation(port, level, pos);
                 if (candidate != null && candidate.lengthSqr() > 1.0E-6D) {
                     exact = candidate;
@@ -367,7 +370,6 @@ public final class PostalTracker {
         }
         return PortKind.FROGPORT;
     }
-
     private static int packageId(ChainConveyorBlockEntity conveyor, ChainConveyorPackage box) {
         // netId is unique per level while alive; mixing the origin keeps ids stable and
         // collision free even across dimensions/saves where netId restarts. Chain packages

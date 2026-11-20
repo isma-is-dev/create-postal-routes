@@ -102,8 +102,9 @@ public final class PostalTextureCache {
         }
         warnedCap = false;
 
-        int opacity = Mth.clamp(PostalConfig.routeOpacity(), 0, 100);
-        int baseAlpha = Math.round(255.0F * opacity / 100.0F);
+        // Full strength here; the configured opacity is applied at draw time, so changing
+        // it never requires rebuilding the textures.
+        int baseAlpha = 255;
 
         int route = routeColor(theme);
         int shadow = ABGR32.color(Math.min(150, baseAlpha / 2), 14, 10, 4);
