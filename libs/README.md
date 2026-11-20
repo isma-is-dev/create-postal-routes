@@ -5,7 +5,8 @@ This addon compiles against Create and Xaero's World Map:
 * **Create** and **Ponder/Catnip** are resolved from `https://maven.createmod.net/`
   automatically by Gradle.
 * **Xaero's World Map / Minimap** are not published to a public maven, so their jars
-  must sit in this folder. They are compile-only: the built mod does not bundle them.
+  must sit in this folder. **XaeroLib** ships nested inside the world map jar and is
+  extracted by the script. They are compile-only: the built mod does not bundle them.
 
 ## Get the jars
 

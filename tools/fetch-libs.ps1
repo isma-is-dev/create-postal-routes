@@ -61,5 +61,28 @@ foreach ($target in $targets) {
 }
 
 Write-Host ""
+Write-Host "Extracting XaeroLib (nested inside Xaero's World Map jar)..."
+
+$xaeroLib = Get-ChildItem -Path $libs -Filter 'xaerolib*.jar' -ErrorAction SilentlyContinue
+if (-not $xaeroLib) {
+    $worldMap = Get-ChildItem -Path $libs -Filter 'xaeroworldmap*.jar' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($worldMap) {
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        $zip = [System.IO.Compression.ZipFile]::OpenRead($worldMap.FullName)
+        $nested = $zip.Entries | Where-Object { $_.FullName -match '^META-INF/jarjar/xaerolib.*\.jar$' } | Select-Object -First 1
+        if ($nested) {
+            $destination = Join-Path $libs (Split-Path $nested.FullName -Leaf)
+            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($nested, $destination, $true)
+            Write-Host "[extracted] $(Split-Path $nested.FullName -Leaf)"
+        } else {
+            Write-Warning "No nested XaeroLib jar found in $($worldMap.Name)."
+        }
+        $zip.Dispose()
+    }
+} else {
+    Write-Host "[ok] XaeroLib: $($xaeroLib[0].Name)"
+}
+
+Write-Host ""
 Write-Host "libs/ ready:"
 Get-ChildItem -Path $libs -Filter '*.jar' | ForEach-Object { Write-Host "  $($_.Name)" }
