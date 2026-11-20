@@ -11,7 +11,7 @@ Create 6 turned logistics into a real postal service: packagers make packages, c
 [b]Create: Postal Routes[/b] mirrors that network onto Xaero's World Map, live:
 
 [list]
-[*][b]Postal routes[/b] — every chain conveyor link as a dashed amber line, with elevation encoded in opacity so crossings stay readable.
+[*][b]Postal routes[/b] — every chain conveyor link as a solid blue line with a dark outline, with elevation encoded in opacity so crossings stay readable.
 [*][b]Ports[/b] — frogports, postboxes and station mail ports as envelope icons. Hover one to see its address and whether it accepts packages.
 [*][b]Live packages[/b] — every package travelling on a conveyor as a smooth moving dot. Optionally loose package entities too.
 [*][b]On-map toggle[/b] — a Postal button with a live package counter, right below Create's train map button.

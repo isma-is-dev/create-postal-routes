@@ -70,11 +70,11 @@ public final class PostalConfig {
     }
 
     public static LineTheme lineTheme() {
-        return safe(CLIENT.lineTheme, LineTheme.AMBER);
+        return safe(CLIENT.lineTheme, LineTheme.BLUE);
     }
 
     public static int routeOpacity() {
-        return Math.max(0, Math.min(100, safe(CLIENT.routeOpacity, 85)));
+        return Math.max(0, Math.min(100, safe(CLIENT.routeOpacity, 100)));
     }
 
     public static int maxMapSections() {
@@ -82,7 +82,7 @@ public final class PostalConfig {
     }
 
     public static int syncIntervalTicks() {
-        return Math.max(1, safe(SERVER.syncIntervalTicks, 10));
+        return Math.max(1, safe(SERVER.syncIntervalTicks, 5));
     }
 
     public static int maxPackages() {
@@ -102,11 +102,11 @@ public final class PostalConfig {
     }
 
     public enum LineTheme {
-        /** Warm postal amber, the default. */
+        /** Strong route blue, the default. */
+        BLUE,
+        /** Warm postal amber. */
         AMBER,
-        /** Copper/Brass, closer to Create's palette. */
-        COPPER,
-        /** Cool teal, for players that prefer less orange on the map. */
+        /** Cool teal. */
         TEAL
     }
 
@@ -147,11 +147,11 @@ public final class PostalConfig {
 
             this.lineTheme = builder
                 .comment("Colour palette for postal routes.")
-                .defineEnum("lineTheme", LineTheme.AMBER);
+                .defineEnum("lineTheme", LineTheme.BLUE);
 
             this.routeOpacity = builder
                 .comment("Opacity of postal routes, 0-100.")
-                .defineInRange("routeOpacity", 85, 0, 100);
+                .defineInRange("routeOpacity", 100, 0, 100);
 
             this.dashedRoutes = builder
                 .comment("Draw routes as dashed lines, which keeps them clearly distinct from Create's train map.")
@@ -180,7 +180,7 @@ public final class PostalConfig {
 
             this.syncIntervalTicks = builder
                 .comment("How often (in ticks) package positions are sent while a player has the map open.")
-                .defineInRange("syncIntervalTicks", 10, 1, 100);
+                .defineInRange("syncIntervalTicks", 5, 1, 100);
 
             this.maxPackages = builder
                 .comment("Maximum number of packages reported per update.")

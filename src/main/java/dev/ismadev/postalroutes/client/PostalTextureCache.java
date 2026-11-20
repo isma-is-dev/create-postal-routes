@@ -45,7 +45,7 @@ public final class PostalTextureCache {
 
     public void ensure(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension,
                        PostalClientState.DimData data, double factor,
-                       int minBuildHeight, boolean showRoutes, boolean showPorts,
+                       boolean showRoutes, boolean showPorts,
                        PostalConfig.LineTheme theme) {
         int newSignature = Objects.hash(dimension, data.revision, data.hash, Double.hashCode(factor),
             theme.ordinal(), showRoutes, showPorts);
@@ -56,7 +56,7 @@ public final class PostalTextureCache {
         built = true;
 
         try {
-            rebuild(data, factor, minBuildHeight, showRoutes, showPorts, theme);
+            rebuild(data, factor, showRoutes, showPorts, theme);
         } catch (Throwable t) {
             PostalRoutes.LOGGER.error("Failed to rasterise the postal map layer; disabling it for this session", t);
             clear();
@@ -96,62 +96,53 @@ public final class PostalTextureCache {
     // Rasterisation
     // ------------------------------------------------------------------
 
-    private void rebuild(PostalClientState.DimData data, double factor, int minBuildHeight,
+    private void rebuild(PostalClientState.DimData data, double factor,
                          boolean showRoutes, boolean showPorts, PostalConfig.LineTheme theme) {
         for (Tile tile : tiles.values()) {
             tile.untouched = true;
         }
         warnedCap = false;
 
-        // Full strength here; the configured opacity is applied at draw time, so changing
-        // it never requires rebuilding the textures.
-        int baseAlpha = 255;
-
         int route = routeColor(theme);
-        int shadow = ABGR32.color(Math.min(150, baseAlpha / 2), 14, 10, 4);
+        int main = ABGR32.color(255, route);
+        int halo = ABGR32.color(170, 8, 14, 26);
 
         if (showRoutes) {
+            // Halo first for every edge, then the solid line on top: otherwise a later
+            // edge's outline would bite into an earlier one at crossings.
             for (PostalEdge edge : data.edges) {
-                drawEdge(edge, factor, minBuildHeight, baseAlpha, route, shadow);
+                rasterEdge(edge, factor, halo, true);
+            }
+            for (PostalEdge edge : data.edges) {
+                rasterEdge(edge, factor, main, false);
             }
         }
 
         if (showPorts) {
-            int portColor = portColor(theme);
+            int portColor = ABGR32.color(255, portColor(theme));
+            int portOutline = ABGR32.color(170, 8, 14, 26);
             for (PostalPort port : data.ports) {
                 int x = Mth.floor(port.x() / factor);
                 int z = Mth.floor(port.z() / factor);
-                setPixel(x, z, ABGR32.color(baseAlpha, 20, 14, 6));
-                setPixel(x + 1, z, ABGR32.color(baseAlpha, 20, 14, 6));
-                setPixel(x, z + 1, ABGR32.color(baseAlpha, 20, 14, 6));
-                setPixel(x + 1, z + 1, ABGR32.color(baseAlpha, 20, 14, 6));
-                setPixel(x, z, ABGR32.color(baseAlpha, portColor));
+                // 2x2 marker so ports stay visible when the map is zoomed out.
+                setPixel(x - 1, z - 1, portOutline);
+                setPixel(x + 2, z - 1, portOutline);
+                setPixel(x - 1, z + 2, portOutline);
+                setPixel(x + 2, z + 2, portOutline);
+                setPixel(x, z, portColor);
+                setPixel(x + 1, z, portColor);
+                setPixel(x, z + 1, portColor);
+                setPixel(x + 1, z + 1, portColor);
             }
         }
 
         prune();
     }
 
-    private void drawEdge(PostalEdge edge, double factor, int minBuildHeight, int baseAlpha,
-                          int route, int shadow) {
-        double x1 = edge.startX() / factor;
-        double z1 = edge.startZ() / factor;
-        double x2 = edge.endX() / factor;
-        double z2 = edge.endZ() / factor;
-
-        // Height is encoded in opacity, exactly like Create's train map: the higher a
-        // strand runs, the more solid it looks, so crossing routes stay readable.
-        float height = (float) Mth.clamp((edge.startY() - minBuildHeight) / 320.0F, 0.0F, 1.0F);
-        int alpha = Math.round(baseAlpha * (0.62F + 0.38F * height));
-        int main = ABGR32.color(alpha, shade(route, 0.82F + 0.18F * height));
-        int soft = ABGR32.color(Math.round(alpha * 0.7F), shade(route, 0.68F));
-
+    private void rasterEdge(PostalEdge edge, double factor, int color, boolean halo) {
         boolean dashed = PostalConfig.dashedRoutes();
-        // Two rows of colour plus a shadow row: one pixel alone disappears when the map
-        // is zoomed out, which is exactly when you want to see the network.
-        rasterLine(x1, z1 + 2.0D, x2, z2 + 2.0D, shadow, false);
-        rasterLine(x1, z1, x2, z2, main, dashed);
-        rasterLine(x1, z1 + 1.0D, x2, z2 + 1.0D, soft, dashed);
+        rasterLine(edge.startX() / factor, edge.startZ() / factor,
+            edge.endX() / factor, edge.endZ() / factor, color, dashed, halo);
     }
 
     /**
@@ -159,8 +150,10 @@ public final class PostalTextureCache {
      *
      * @param color  packed colour
      * @param dashed leave gaps so postal routes never read as train tracks
+     * @param halo   expand every pixel to a 3x3 block, which produces the dark border
      */
-    private void rasterLine(double x1, double z1, double x2, double z2, int color, boolean dashed) {
+    private void rasterLine(double x1, double z1, double x2, double z2, int color,
+                            boolean dashed, boolean halo) {
         int ix1 = Mth.floor(x1);
         int iz1 = Mth.floor(z1);
         int ix2 = Mth.floor(x2);
@@ -178,7 +171,15 @@ public final class PostalTextureCache {
             // clearly different from Create's solid train lines.
             boolean draw = !dashed || (step % 8) < 5;
             if (draw) {
-                setPixel(ix1, iz1, color);
+                if (halo) {
+                    for (int ox = -1; ox <= 1; ox++) {
+                        for (int oz = -1; oz <= 1; oz++) {
+                            setPixel(ix1 + ox, iz1 + oz, color);
+                        }
+                    }
+                } else {
+                    setPixel(ix1, iz1, color);
+                }
             }
             if (ix1 == ix2 && iz1 == iz2) {
                 break;
@@ -195,7 +196,6 @@ public final class PostalTextureCache {
             step++;
         }
     }
-
     private void setPixel(int x, int z, int argb) {
         Tile tile = getOrCreate(Math.floorDiv(x, TILE), Math.floorDiv(z, TILE));
         if (tile == null) {
@@ -245,25 +245,18 @@ public final class PostalTextureCache {
 
     private static int routeColor(PostalConfig.LineTheme theme) {
         return switch (theme) {
-            case COPPER -> 0xD67C4A;
-            case TEAL -> 0x60C4B4;
-            default -> 0xE8AA44;
+            case AMBER -> 0xE8AA44;
+            case TEAL -> 0x2FBFAE;
+            default -> 0x3D7EFF;
         };
     }
 
     private static int portColor(PostalConfig.LineTheme theme) {
         return switch (theme) {
-            case COPPER -> 0xF0A070;
+            case AMBER -> 0xFFD98A;
             case TEAL -> 0xA8F0E4;
-            default -> 0xFFD98A;
+            default -> 0x9FC0FF;
         };
-    }
-
-    private static int shade(int rgb, float factor) {
-        int r = Math.min(255, Math.round(((rgb >> 16) & 0xFF) * factor));
-        int g = Math.min(255, Math.round(((rgb >> 8) & 0xFF) * factor));
-        int b = Math.min(255, Math.round((rgb & 0xFF) * factor));
-        return (r << 16) | (g << 8) | b;
     }
 
     // ------------------------------------------------------------------

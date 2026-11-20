@@ -109,13 +109,12 @@ public final class PostalMapOverlay {
             double mouseMapX = (mouseX - (double) map.width / 2.0D) / scale + cameraX;
             double mouseMapZ = (mouseY - (double) map.height / 2.0D) / scale + cameraZ;
 
-            int minBuildHeight = mc.level == null ? -64 : mc.level.getMinBuildHeight();
             int opacity = Mth.clamp(PostalConfig.routeOpacity(), 0, 100);
             float alpha = opacity / 100.0F;
 
             // Always run ensure(), even when every layer is off: that is what clears the
             // cached raster. Otherwise the last drawn routes would stay on screen.
-            PostalTextureCache.INSTANCE.ensure(dimension, data, factor, minBuildHeight,
+            PostalTextureCache.INSTANCE.ensure(dimension, data, factor,
                 PostalConfig.showRoutes(), PostalConfig.showPorts(), PostalConfig.lineTheme());
             PostalTextureCache.INSTANCE.render(graphics, bounds, alpha);
 
@@ -197,7 +196,7 @@ public final class PostalMapOverlay {
 
             int color = portColor(port);
             if (drawIcons) {
-                PostalGlyphs.envelope(graphics, x, z, color, 0xFF241708);
+                PostalGlyphs.envelope(graphics, x, z, color);
             } else {
                 PostalGlyphs.box(graphics, x, z, 2, color, 0x90000000);
             }
@@ -229,7 +228,7 @@ public final class PostalMapOverlay {
             if (dot.kind() == PostalPackage.KIND_ENTITY && !showEntities) {
                 continue;
             }
-            Vec3 position = dot.sample(now, data.intervalMs);
+            Vec3 position = dot.sample(now);
             double x = position.x / factor;
             double z = position.z / factor;
             if (!bounds.contains(Mth.floor(x), Mth.floor(z))) {
@@ -252,7 +251,7 @@ public final class PostalMapOverlay {
     private static int portColor(PostalPort port) {
         return switch (port.kind()) {
             case PortKind.POSTBOX -> 0xFF7FD8C6;
-            case PortKind.STATION -> 0xFF9FC7FF;
+            case PortKind.STATION -> 0xFFE8F0FF;
             default -> 0xFFF0B44A;
         };
     }

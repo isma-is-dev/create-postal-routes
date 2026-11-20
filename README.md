@@ -19,7 +19,7 @@ but the moment your base grows you lose track of it.
 
 This addon reads that network on the server and mirrors it onto Xaero's World Map:
 
-* **Postal routes** — every chain conveyor link, drawn as a dashed amber line with an
+* **Postal routes** — every chain conveyor link, drawn as a solid blue line with a dark outline with an
   elevation-aware shadow.
 * **Ports** — frogports, postboxes and station mail ports as envelope icons. Hover one to
   see its address and whether it accepts packages.
@@ -59,7 +59,7 @@ decides what to send; the client decides what to draw.
 
 | Element | Meaning |
 |---|---|
-| Dashed amber line | A chain conveyor link between two chain conveyors |
+| Solid blue line, dark outline | A chain conveyor link between two chain conveyors |
 | Stronger line | Higher elevation (same convention as Create's train map) |
 | Amber envelope | Frogport attached to a chain conveyor |
 | Teal envelope | Postbox |
@@ -81,8 +81,8 @@ packages are currently moving in the dimension you are viewing.
 | `showPorts` | `true` | Draw port icons |
 | `showPackages` | `true` | Draw packages on conveyors |
 | `showEntityPackages` | `true` | Draw loose package entities |
-| `lineTheme` | `AMBER` | `AMBER`, `COPPER` or `TEAL` |
-| `routeOpacity` | `85` | Route opacity, 0-100 |
+| `lineTheme` | `BLUE` | `BLUE`, `AMBER` or `TEAL` |
+| `routeOpacity` | `100` | Route opacity, 0-100 |
 | `dashedRoutes` | `true` | Dashed style (keeps routes distinct from train tracks) |
 | `maxMapSections` | `256` | 128×128 block texture cache limit (64 KiB each) |
 
@@ -90,7 +90,7 @@ packages are currently moving in the dimension you are viewing.
 
 | Option | Default | Description |
 |---|---|---|
-| `syncIntervalTicks` | `10` | Package update rate while a map is open |
+| `syncIntervalTicks` | `5` | Package update rate while a map is open |
 | `maxPackages` | `1024` | Packages reported per update |
 | `maxEntityPackages` | `128` | Loose package entities reported per update |
 | `maxNodes` | `8192` | Tracked postal blocks per dimension |

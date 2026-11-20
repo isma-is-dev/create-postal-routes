@@ -6,34 +6,38 @@ import net.minecraft.client.gui.GuiGraphics;
 /**
  * Tiny procedurally drawn glyphs. The mod ships no textures for map symbols, which keeps
  * the jar small and the icons crisp at any map zoom.
+ *
+ * <p>Port icons are deliberately 5x4 so a whole postal network stays readable instead of
+ * covering the terrain.</p>
  */
 public final class PostalGlyphs {
 
     private static final String[] ENVELOPE = {
-        "1111111",
-        "1100011",
-        "1010101",
-        "1001001",
-        "1111111"
+        "11111",
+        "11011",
+        "10101",
+        "11111"
     };
 
-    private static final int ENVELOPE_WIDTH = 7;
-    private static final int ENVELOPE_HEIGHT = 5;
+    private static final int ENVELOPE_WIDTH = 5;
+    private static final int ENVELOPE_HEIGHT = 4;
+
+    /** 1px translucent dark frame around the 5x4 glyph. */
+    private static final int FRAME_COLOR = 0xB0100C04;
 
     private PostalGlyphs() {
     }
 
     /**
-     * Draws a small envelope icon with a dark backing card so it stays readable over any
-     * terrain colour. The icon is centred on the given map position (1 block = 1 unit).
+     * Draws a compact envelope icon centred on the given map position (1 block = 1 unit).
      */
-    public static void envelope(GuiGraphics graphics, double x, double y, int color, int outline) {
+    public static void envelope(GuiGraphics graphics, double x, double y, int color) {
         PoseStack pose = graphics.pose();
         pose.pushPose();
-        // Centre the 7x5 glyph (plus its 1px card) on the anchor instead of drawing from
-        // it, otherwise every port icon looks shifted by a couple of blocks.
         pose.translate(x - ENVELOPE_WIDTH / 2.0D, y - ENVELOPE_HEIGHT / 2.0D, 0.0D);
-        graphics.fill(-1, -1, ENVELOPE_WIDTH + 1, ENVELOPE_HEIGHT + 1, outline);
+        // A thin translucent frame instead of a solid card: it outlines the icon without
+        // making it look two blocks wide on the map.
+        graphics.fill(-1, -1, ENVELOPE_WIDTH + 1, ENVELOPE_HEIGHT + 1, FRAME_COLOR);
         for (int row = 0; row < ENVELOPE.length; row++) {
             String line = ENVELOPE[row];
             for (int col = 0; col < ENVELOPE_WIDTH; col++) {

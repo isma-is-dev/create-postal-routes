@@ -79,7 +79,16 @@ public final class PostalClientState {
     public static void acceptPackages(S2CPackageDots packet) {
         DimData data = get(packet.dimension());
         long now = System.currentTimeMillis();
-        int interval = Math.max(50, packet.intervalMs());
+
+        // Interpolate over the *measured* gap between packets, not the configured one.
+        // Network and tick jitter make the configured value wrong often enough that dots
+        // would finish their glide, sit still and then jump when the next packet landed.
+        int duration;
+        if (data.lastPacketMillis == 0L) {
+            duration = Math.max(60, packet.intervalMs());
+        } else {
+            duration = (int) Math.max(60L, Math.min(1200L, now - data.lastPacketMillis));
+        }
 
         Set<Integer> seen = new HashSet<>();
         for (PostalPackage pkg : packet.packages()) {
@@ -88,10 +97,10 @@ public final class PostalClientState {
             }
             Dot dot = data.dots.get(pkg.id());
             if (dot == null) {
-                dot = new Dot(pkg.x(), pkg.y(), pkg.z(), pkg.kind(), pkg.address(), now);
+                dot = new Dot(pkg.x(), pkg.y(), pkg.z(), pkg.kind(), pkg.address(), now, duration);
                 data.dots.put(pkg.id(), dot);
             } else {
-                dot.moveTo(pkg.x(), pkg.y(), pkg.z(), now);
+                dot.moveTo(pkg.x(), pkg.y(), pkg.z(), now, duration);
                 dot.kind = pkg.kind();
                 dot.address = pkg.address();
             }
@@ -101,7 +110,7 @@ public final class PostalClientState {
         data.dots.keySet().retainAll(seen);
         data.lastPacketMillis = now;
         data.lastGameTime = packet.gameTime();
-        data.intervalMs = interval;
+        data.intervalMs = duration;
     }
 
     // ------------------------------------------------------------------
@@ -146,10 +155,11 @@ public final class PostalClientState {
         double y;
         double z;
         long timestamp;
+        int durationMs;
         int kind;
         String address;
 
-        Dot(double x, double y, double z, int kind, String address, long now) {
+        Dot(double x, double y, double z, int kind, String address, long now, int durationMs) {
             this.px = x;
             this.py = y;
             this.pz = z;
@@ -159,9 +169,10 @@ public final class PostalClientState {
             this.kind = kind;
             this.address = address == null ? "" : address;
             this.timestamp = now;
+            this.durationMs = durationMs;
         }
 
-        void moveTo(double nx, double ny, double nz, long now) {
+        void moveTo(double nx, double ny, double nz, long now, int durationMs) {
             this.px = this.x;
             this.py = this.y;
             this.pz = this.z;
@@ -169,10 +180,11 @@ public final class PostalClientState {
             this.y = ny;
             this.z = nz;
             this.timestamp = now;
+            this.durationMs = durationMs;
         }
 
-        public Vec3 sample(long now, int intervalMs) {
-            double t = (double) (now - this.timestamp) / Math.max(50, intervalMs);
+        public Vec3 sample(long now) {
+            double t = (double) (now - this.timestamp) / Math.max(60, this.durationMs);
             t = t < 0.0D ? 0.0D : Math.min(t, 1.0D);
             return new Vec3(
                 this.px + (this.x - this.px) * t,

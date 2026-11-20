@@ -16,7 +16,7 @@ This addon mirrors the network onto Xaero's World Map, live.
 
 ## Features
 
-- **Postal routes** — every chain conveyor link as a dashed amber line, with elevation
+- **Postal routes** — every chain conveyor link as a solid blue line with a dark outline, with elevation
   encoded in opacity so overlapping routes stay readable.
 - **Ports** — frogports, postboxes and station mail ports as envelope icons. Hover for the
   address and accept state.
