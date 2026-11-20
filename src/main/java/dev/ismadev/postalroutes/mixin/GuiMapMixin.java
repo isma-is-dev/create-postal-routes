@@ -21,6 +21,9 @@ import xaero.map.gui.GuiMap;
 public abstract class GuiMapMixin {
 
     @Unique
+    private static boolean postalroutes$loggedHook;
+
+    @Unique
     private boolean postalroutes$failed;
 
     @Inject(
@@ -35,6 +38,10 @@ public abstract class GuiMapMixin {
                                                 float partialTicks, CallbackInfo ci) {
         if (postalroutes$failed) {
             return;
+        }
+        if (!postalroutes$loggedHook) {
+            postalroutes$loggedHook = true;
+            PostalRoutes.LOGGER.info("Postal Routes: Xaero world map hook is active");
         }
         try {
             PostalMapOverlay.onRender(graphics, (GuiMap) (Object) this, mouseX, mouseY, partialTicks);

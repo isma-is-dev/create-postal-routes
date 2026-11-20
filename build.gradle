@@ -27,6 +27,11 @@ neoForge {
         client {
             client()
             gameDirectory = file('run/client')
+            // Optional: -PquickPlayWorld=WorldName joins a singleplayer save on launch,
+            // which is handy for smoke-testing the overlay without clicking through menus.
+            if (project.hasProperty('quickPlayWorld')) {
+                programArguments.addAll('--quickPlaySingleplayer', project.property('quickPlayWorld'))
+            }
         }
         server {
             server()
@@ -76,6 +81,9 @@ dependencies {
     // Dev-run convenience: if a real Create jar sits in libs/, the dev server can boot
     // with Create installed and the addon can be smoke-tested without a modpack.
     runtimeOnly fileTree(dir: 'libs', include: ['create-*.jar'])
+    // Xaero is client-only; xaerolib ships nested inside both jars and must not be added
+    // twice (jarjar resolves it).
+    runtimeOnly fileTree(dir: 'libs', include: ['xaeroworldmap*.jar', 'xaerominimap*.jar'])
 }
 
 tasks.register('checkLibs') {
