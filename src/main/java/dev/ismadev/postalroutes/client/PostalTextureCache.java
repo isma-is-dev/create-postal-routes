@@ -71,11 +71,12 @@ public final class PostalTextureCache {
         RenderSystem.enableBlend();
         graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
         for (Tile tile : tiles.values()) {
-            int x = tile.sectionX * TILE;
-            int z = tile.sectionZ * TILE;
             if (tile.isOutside(bounds)) {
                 continue;
             }
+            int x = tile.sectionX * TILE;
+            int z = tile.sectionZ * TILE;
+            tile.uploadIfNeeded();
             graphics.blit(tile.location, x, z, 0.0F, 0.0F, TILE, TILE, TILE, TILE);
         }
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -143,21 +144,23 @@ public final class PostalTextureCache {
         float height = (float) Mth.clamp((edge.startY() - minBuildHeight) / 320.0F, 0.0F, 1.0F);
         int alpha = Math.round(baseAlpha * (0.62F + 0.38F * height));
         int main = ABGR32.color(alpha, shade(route, 0.82F + 0.18F * height));
+        int soft = ABGR32.color(Math.round(alpha * 0.7F), shade(route, 0.68F));
 
         boolean dashed = PostalConfig.dashedRoutes();
-        rasterLine(x1, z1, x2, z2, shadow, false, true);
-        rasterLine(x1, z1, x2, z2, main, dashed, false);
+        // Two rows of colour plus a shadow row: one pixel alone disappears when the map
+        // is zoomed out, which is exactly when you want to see the network.
+        rasterLine(x1, z1 + 2.0D, x2, z2 + 2.0D, shadow, false);
+        rasterLine(x1, z1, x2, z2, main, dashed);
+        rasterLine(x1, z1 + 1.0D, x2, z2 + 1.0D, soft, dashed);
     }
 
     /**
      * Bresenham line in map pixels.
      *
-     * @param color   packed colour
-     * @param dashed  leave gaps so postal routes never read as train tracks
-     * @param shadow  draw one row below, which is where the dark backdrop goes
+     * @param color  packed colour
+     * @param dashed leave gaps so postal routes never read as train tracks
      */
-    private void rasterLine(double x1, double z1, double x2, double z2, int color,
-                            boolean dashed, boolean shadow) {
+    private void rasterLine(double x1, double z1, double x2, double z2, int color, boolean dashed) {
         int ix1 = Mth.floor(x1);
         int iz1 = Mth.floor(z1);
         int ix2 = Mth.floor(x2);
@@ -171,9 +174,11 @@ public final class PostalTextureCache {
         int step = 0;
 
         while (true) {
-            boolean draw = !dashed || (step % 4) != 3;
+            // 5 pixels on, 3 off: long enough to read as a route, short enough to be
+            // clearly different from Create's solid train lines.
+            boolean draw = !dashed || (step % 8) < 5;
             if (draw) {
-                setPixel(ix1, shadow ? iz1 + 1 : iz1, color);
+                setPixel(ix1, iz1, color);
             }
             if (ix1 == ix2 && iz1 == iz2) {
                 break;
@@ -272,6 +277,7 @@ public final class PostalTextureCache {
         private final DynamicTexture texture;
         private final ResourceLocation location;
         private boolean untouched;
+        private boolean requiresUpload = true;
 
         private Tile(int sectionX, int sectionZ) {
             this.sectionX = sectionX;
@@ -288,7 +294,15 @@ public final class PostalTextureCache {
 
         private NativeImage image() {
             this.untouched = false;
+            this.requiresUpload = true;
             return texture.getPixels();
+        }
+
+        private void uploadIfNeeded() {
+            if (requiresUpload) {
+                requiresUpload = false;
+                texture.upload();
+            }
         }
 
         private boolean isOutside(Rect2i bounds) {

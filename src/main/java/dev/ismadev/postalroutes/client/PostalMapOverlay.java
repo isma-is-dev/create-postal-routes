@@ -78,14 +78,26 @@ public final class PostalMapOverlay {
             double cameraX = accessor.postal$getCameraX();
             double cameraZ = accessor.postal$getCameraZ();
             double mapScale = accessor.postal$getScale();
-            if (mapScale <= 0.0D) {
+            if (!Double.isFinite(mapScale) || mapScale <= 0.0D) {
                 return;
             }
 
-            double guiScale = (double) mc.getWindow().getScreenWidth() / (double) mc.getWindow().getGuiScaledWidth();
-            double interfaceScale = (double) mc.getWindow().getWidth() / (double) mc.getWindow().getScreenWidth();
-            double scale = mapScale / guiScale / interfaceScale;
+            // Xaero's `scale` is window pixels per block. GUI space divides that by the
+            // GUI scale, which is what the pose below works in. Using getGuiScale()
+            // instead of framebuffer/window ratios matters: those are 0 while the window
+            // is minimised, which used to turn the whole transform into NaN.
+            double guiScale = mc.getWindow().getGuiScale();
+            if (!Double.isFinite(guiScale) || guiScale <= 0.0D) {
+                guiScale = 1.0D;
+            }
+            double scale = mapScale / guiScale;
+            if (!Double.isFinite(scale) || scale <= 0.0D) {
+                return;
+            }
             double factor = dimensionDivisor(processor, mapDimension, mc);
+            if (!Double.isFinite(factor) || factor < 1.0E-4D) {
+                factor = 1.0D;
+            }
 
             PoseStack pose = graphics.pose();
             pose.pushPose();

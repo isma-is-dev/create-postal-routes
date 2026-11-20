@@ -25,12 +25,14 @@ public final class PostalGlyphs {
 
     /**
      * Draws a small envelope icon with a dark backing card so it stays readable over any
-     * terrain colour. Coordinates are in map space (1 block = 1 unit).
+     * terrain colour. The icon is centred on the given map position (1 block = 1 unit).
      */
     public static void envelope(GuiGraphics graphics, double x, double y, int color, int outline) {
         PoseStack pose = graphics.pose();
         pose.pushPose();
-        pose.translate(x - 0.5D, y - 0.5D, 0.0D);
+        // Centre the 7x5 glyph (plus its 1px card) on the anchor instead of drawing from
+        // it, otherwise every port icon looks shifted by a couple of blocks.
+        pose.translate(x - ENVELOPE_WIDTH / 2.0D, y - ENVELOPE_HEIGHT / 2.0D, 0.0D);
         graphics.fill(-1, -1, ENVELOPE_WIDTH + 1, ENVELOPE_HEIGHT + 1, outline);
         for (int row = 0; row < ENVELOPE.length; row++) {
             String line = ENVELOPE[row];

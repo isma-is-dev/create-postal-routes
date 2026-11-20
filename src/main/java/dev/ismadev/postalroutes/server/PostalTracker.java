@@ -334,24 +334,12 @@ public final class PostalTracker {
 
     private void collectPort(PackagePortBlockEntity port, List<PostalPort> ports) {
         BlockPos pos = port.getBlockPos();
-        Vec3 exact = null;
-        try {
-            // Only chain-attached frogports have a meaningful position along a route. A
-            // postbox's target is a train station, and the station block is not where the
-            // postbox sits, so those keep their own block position.
-            if (port.target instanceof PackagePortTarget.ChainConveyorFrogportTarget) {
-                Vec3 candidate = port.target.getExactTargetLocation(port, level, pos);
-                if (candidate != null && candidate.lengthSqr() > 1.0E-6D) {
-                    exact = candidate;
-                }
-            }
-        } catch (Throwable t) {
-            PostalRoutes.LOGGER.debug("Could not resolve postal port location at {}", pos, t);
-        }
-
-        double x = exact != null ? exact.x : pos.getX() + 0.5D;
-        double y = exact != null ? exact.y : pos.getY() + 0.5D;
-        double z = exact != null ? exact.z : pos.getZ() + 0.5D;
+        // Anchor ports to their own block. A chain frogport's target is a point on the
+        // chain one block away, which reads as "misplaced" on a map where every other
+        // marker sits on a block.
+        double x = pos.getX() + 0.5D;
+        double y = pos.getY() + 0.5D;
+        double z = pos.getZ() + 0.5D;
 
         int kind = kindOf(port);
         String address = port.addressFilter == null ? "" : port.addressFilter;
