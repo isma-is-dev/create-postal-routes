@@ -1,0 +1,17 @@
+{
+  "postalroutes.widget.label": "Postal",
+  "postalroutes.widget.title": "Create: Rutas Postales",
+  "postalroutes.widget.on": "Capa activada",
+  "postalroutes.widget.off": "Capa desactivada",
+  "postalroutes.widget.hint": "Clic para activar/desactivar",
+
+  "postalroutes.port.frogport": "Frogport",
+  "postalroutes.port.postbox": "Buzón",
+  "postalroutes.port.station": "Puerto de correo de estación",
+
+  "postalroutes.tooltip.no_address": "Sin dirección",
+  "postalroutes.tooltip.accepting": "Acepta paquetes",
+  "postalroutes.tooltip.rejecting": "No acepta paquetes",
+  "postalroutes.tooltip.package": "Paquete en tránsito",
+  "postalroutes.tooltip.loose_package": "Paquete suelto"
+}

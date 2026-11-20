@@ -1,0 +1,17 @@
+{
+  "postalroutes.widget.label": "Postal",
+  "postalroutes.widget.title": "Create: Postal Routes",
+  "postalroutes.widget.on": "Overlay enabled",
+  "postalroutes.widget.off": "Overlay disabled",
+  "postalroutes.widget.hint": "Click to toggle",
+
+  "postalroutes.port.frogport": "Frogport",
+  "postalroutes.port.postbox": "Postbox",
+  "postalroutes.port.station": "Station mail port",
+
+  "postalroutes.tooltip.no_address": "No address",
+  "postalroutes.tooltip.accepting": "Accepting packages",
+  "postalroutes.tooltip.rejecting": "Not accepting packages",
+  "postalroutes.tooltip.package": "Package in transit",
+  "postalroutes.tooltip.loose_package": "Loose package"
+}
