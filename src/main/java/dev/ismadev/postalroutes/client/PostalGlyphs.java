@@ -7,36 +7,43 @@ import net.minecraft.client.gui.GuiGraphics;
  * Tiny procedurally drawn glyphs. The mod ships no textures for map symbols, which keeps
  * the jar small and the icons crisp at any map zoom.
  *
- * <p>Port icons are deliberately 5x4 so a whole postal network stays readable instead of
- * covering the terrain.</p>
+ * <p>Port icons are deliberately 3x2 so a dense postal network stays readable instead of
+ * covering the terrain; the GUI button draws the same glyph at double scale.</p>
  */
 public final class PostalGlyphs {
 
     private static final String[] ENVELOPE = {
-        "11111",
-        "11011",
-        "10101",
-        "11111"
+        "111",
+        "101"
     };
 
-    private static final int ENVELOPE_WIDTH = 5;
-    private static final int ENVELOPE_HEIGHT = 4;
+    private static final int ENVELOPE_WIDTH = 3;
+    private static final int ENVELOPE_HEIGHT = 2;
 
-    /** 1px translucent dark frame around the 5x4 glyph. */
+    /** 1px translucent dark frame around the glyph. */
     private static final int FRAME_COLOR = 0xB0100C04;
 
     private PostalGlyphs() {
     }
 
     /**
-     * Draws a compact envelope icon centred on the given map position (1 block = 1 unit).
+     * Draws the compact envelope icon centred on the given map position (1 block = 1 unit).
      */
     public static void envelope(GuiGraphics graphics, double x, double y, int color) {
+        envelope(graphics, x, y, color, 1);
+    }
+
+    /**
+     * Same glyph at an arbitrary pixel scale, used by the map button.
+     */
+    public static void envelope(GuiGraphics graphics, double x, double y, int color, int scale) {
+        int pixel = Math.max(1, scale);
         PoseStack pose = graphics.pose();
         pose.pushPose();
-        pose.translate(x - ENVELOPE_WIDTH / 2.0D, y - ENVELOPE_HEIGHT / 2.0D, 0.0D);
+        pose.translate(x - ENVELOPE_WIDTH * pixel / 2.0D, y - ENVELOPE_HEIGHT * pixel / 2.0D, 0.0D);
+        pose.scale(pixel, pixel, 1.0F);
         // A thin translucent frame instead of a solid card: it outlines the icon without
-        // making it look two blocks wide on the map.
+        // making it look wider than the block it sits on.
         graphics.fill(-1, -1, ENVELOPE_WIDTH + 1, ENVELOPE_HEIGHT + 1, FRAME_COLOR);
         for (int row = 0; row < ENVELOPE.length; row++) {
             String line = ENVELOPE[row];

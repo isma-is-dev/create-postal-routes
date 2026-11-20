@@ -54,7 +54,7 @@ public final class PostalMapWidget {
         graphics.fill(X, Y, X + 1, Y + HEIGHT, border);
         graphics.fill(X + WIDTH - 1, Y, X + WIDTH, Y + HEIGHT, border);
 
-        PostalGlyphs.envelope(graphics, X + 9, Y + 7, enabled ? 0xFFFFD98A : 0xFF7A7A7A);
+        PostalGlyphs.envelope(graphics, X + 9, Y + 7, enabled ? 0xFFFFD98A : 0xFF7A7A7A, 2);
 
         Component label = Component.translatable("postalroutes.widget.label");
         graphics.drawString(font, label, X + 14, Y + 3, enabled ? TEXT_ON : TEXT_OFF, false);
