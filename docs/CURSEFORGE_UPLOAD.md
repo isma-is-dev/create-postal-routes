@@ -17,7 +17,9 @@ Everything needed to publish **Create: Postal Routes**. Field values are ready t
 | License | `MIT License` |
 | Game version | `1.21.1` |
 | Mod loader | `NeoForge` |
-| Environment | `Client` + `Server` (both) |
+| Java | `Java 21` |
+| Environment | `Client` + `Server` (tick both) |
+| Release type | `Release` |
 | Project avatar | `docs/curseforge/avatar-400.png` |
 | Source | `https://github.com/isma-is-dev/create-postal-routes` |
 | Issues | `https://github.com/isma-is-dev/create-postal-routes/issues` |
@@ -48,6 +50,7 @@ Project → **Files** → *Upload File*:
 | Display name | e.g. `1.0.3` |
 | Release type | `Release` |
 | Game versions | `1.21.1`, `NeoForge`, `Client`, `Server` |
+| Java | `Java 21` |
 | Changelog | copy the matching section of `CHANGELOG.md` (Markdown) |
 
 ### Option B — API script
