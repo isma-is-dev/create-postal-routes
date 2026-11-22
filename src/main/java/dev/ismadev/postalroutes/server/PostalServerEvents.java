@@ -13,6 +13,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -218,9 +219,8 @@ public final class PostalServerEvents {
     // ------------------------------------------------------------------
 
     public static Component describe(MinecraftServer server) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Postal Routes — ").append(countTrackedBlocks()).append(" tracked postal blocks, ")
-            .append(REQUESTS.size()).append(" map viewer(s)");
+        MutableComponent output = Component.translatable("postalroutes.command.stats.header",
+            countTrackedBlocks(), REQUESTS.size());
 
         for (Map.Entry<ResourceKey<Level>, PostalTracker> entry : TRACKERS.entrySet()) {
             PostalTracker tracker = entry.getValue();
@@ -231,18 +231,17 @@ public final class PostalServerEvents {
                 PostalRoutes.LOGGER.warn("Failed to snapshot postal network in {}", entry.getKey().location(), t);
                 continue;
             }
-            builder.append('\n')
-                .append(entry.getKey().location())
-                .append(": ")
-                .append(tracker.trackedBlocks()).append(" blocks, ")
-                .append(snapshot.edges().size()).append(" routes, ")
-                .append(snapshot.ports().size()).append(" ports, ")
-                .append(snapshot.packages().size()).append(" packages");
+            output.append(Component.literal("\n")).append(Component.translatable(
+                "postalroutes.command.stats.dimension",
+                entry.getKey().location().toString(),
+                tracker.trackedBlocks(),
+                snapshot.edges().size(),
+                snapshot.ports().size(),
+                snapshot.packages().size()));
         }
 
-        return Component.literal(builder.toString()).withStyle(ChatFormatting.GRAY);
+        return output.withStyle(ChatFormatting.GRAY);
     }
-
     private static int countTrackedBlocks() {
         int total = 0;
         for (PostalTracker tracker : TRACKERS.values()) {
@@ -276,8 +275,8 @@ public final class PostalServerEvents {
                 }
             }
             int scanned = chunks;
-            context.getSource().sendSuccess(() -> Component.literal(
-                "Postal Routes rescanned " + scanned + " loaded chunks").withStyle(ChatFormatting.GRAY), false);
+            context.getSource().sendSuccess(() -> Component.translatable(
+                "postalroutes.command.rescan", scanned).withStyle(ChatFormatting.GRAY), false);
             return 1;
         }));
 

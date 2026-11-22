@@ -13,5 +13,9 @@
   "postalroutes.tooltip.accepting": "Acepta paquetes",
   "postalroutes.tooltip.rejecting": "No acepta paquetes",
   "postalroutes.tooltip.package": "Paquete en tránsito",
-  "postalroutes.tooltip.loose_package": "Paquete suelto"
+  "postalroutes.tooltip.loose_package": "Paquete suelto",
+
+  "postalroutes.command.stats.header": "Rutas Postales — %s bloques postales indexados, %s espectador(es) del mapa",
+  "postalroutes.command.stats.dimension": "%s: %s bloques, %s rutas, %s puertos, %s paquetes",
+  "postalroutes.command.rescan": "Rutas Postales reindexó %s chunks cargados"
 }

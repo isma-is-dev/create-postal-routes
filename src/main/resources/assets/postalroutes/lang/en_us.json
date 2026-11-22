@@ -13,5 +13,9 @@
   "postalroutes.tooltip.accepting": "Accepting packages",
   "postalroutes.tooltip.rejecting": "Not accepting packages",
   "postalroutes.tooltip.package": "Package in transit",
-  "postalroutes.tooltip.loose_package": "Loose package"
+  "postalroutes.tooltip.loose_package": "Loose package",
+
+  "postalroutes.command.stats.header": "Postal Routes — %s tracked postal blocks, %s map viewer(s)",
+  "postalroutes.command.stats.dimension": "%s: %s blocks, %s routes, %s ports, %s packages",
+  "postalroutes.command.rescan": "Postal Routes rescanned %s loaded chunks"
 }

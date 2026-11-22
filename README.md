@@ -133,7 +133,8 @@ Gradle needs JDK 21. Create and Ponder/Catnip are pulled from
 ## Technical write-up
 
 How the overlay is built, why it lines up with the terrain, and what the limitations are:
-[docs/DESIGN.md](docs/DESIGN.md). Testing checklist: [docs/TESTING.md](docs/TESTING.md).
+[docs/DESIGN.md](docs/DESIGN.md). Testing checklist: [docs/TESTING.md](docs/TESTING.md). Adding a language:
+[docs/TRANSLATING.md](docs/TRANSLATING.md).
 
 ## License
 
