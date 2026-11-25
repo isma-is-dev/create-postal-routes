@@ -4,6 +4,13 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2026-11-25
+
+### Fixed
+
+- Map colours were packed as RGB into an ABGR buffer (`ABGR32.color(alpha, rgb)` does not
+  swap channels), so postal-blue routes rendered orange and red/blue were swapped on every
+  port icon. All colours now go through an explicit ARGB→ABGR conversion.
 ## [1.0.4] - 2026-11-22
 
 ### Fixed

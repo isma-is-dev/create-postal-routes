@@ -104,8 +104,8 @@ public final class PostalTextureCache {
         warnedCap = false;
 
         int route = routeColor(theme);
-        int main = ABGR32.color(255, route);
-        int halo = ABGR32.color(170, 8, 14, 26);
+        int main = abgr(255, route);
+        int halo = abgr(170, 0x080E1A);
 
         if (showRoutes) {
             // Halo first for every edge, then the solid line on top: otherwise a later
@@ -119,8 +119,8 @@ public final class PostalTextureCache {
         }
 
         if (showPorts) {
-            int portColor = ABGR32.color(255, portColor(theme));
-            int portOutline = ABGR32.color(170, 8, 14, 26);
+            int portColor = abgr(255, portColor(theme));
+            int portOutline = abgr(170, 0x080E1A);
             for (PostalPort port : data.ports) {
                 int x = Mth.floor(port.x() / factor);
                 int z = Mth.floor(port.z() / factor);
@@ -243,6 +243,10 @@ public final class PostalTextureCache {
         });
     }
 
+    /** Packs an 0xRRGGBB colour plus alpha into the ABGR layout NativeImage expects. */
+    private static int abgr(int alpha, int rgb) {
+        return ABGR32.fromArgb32((alpha << 24) | (rgb & 0xFFFFFF));
+    }
     private static int routeColor(PostalConfig.LineTheme theme) {
         return switch (theme) {
             case AMBER -> 0xE8AA44;
