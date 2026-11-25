@@ -4,6 +4,19 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.6] - 2026-11-25
+
+### Changed
+
+- Restored the **orange** postal routes (1.0.5 fixed the colour channels and turned them
+  blue). The orange is now written explicitly instead of being a side effect of swapped
+  channels: `lineTheme = ORANGE` by default, `AMBER` and `TEAL` still available.
+- The map button is wider, so the label and the package count are no longer cramped.
+
+### Fixed
+
+- Button clicks now use raw mouse input, so the toggle works even when part of the button
+  overlaps the map area (GuiMap was eating those clicks).
 ## [1.0.5] - 2026-11-25
 
 ### Fixed

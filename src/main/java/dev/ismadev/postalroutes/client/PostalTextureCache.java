@@ -249,9 +249,9 @@ public final class PostalTextureCache {
     }
     private static int routeColor(PostalConfig.LineTheme theme) {
         return switch (theme) {
-            case AMBER -> 0xE8AA44;
+            case AMBER -> 0xF0B04A;
             case TEAL -> 0x2FBFAE;
-            default -> 0x3D7EFF;
+            default -> 0xFF7E3D;
         };
     }
 
@@ -259,7 +259,7 @@ public final class PostalTextureCache {
         return switch (theme) {
             case AMBER -> 0xFFD98A;
             case TEAL -> 0xA8F0E4;
-            default -> 0x9FC0FF;
+            default -> 0xFFD98A;
         };
     }
 

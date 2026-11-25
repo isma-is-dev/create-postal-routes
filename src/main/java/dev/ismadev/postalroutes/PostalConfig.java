@@ -70,7 +70,7 @@ public final class PostalConfig {
     }
 
     public static LineTheme lineTheme() {
-        return safe(CLIENT.lineTheme, LineTheme.BLUE);
+        return safe(CLIENT.lineTheme, LineTheme.ORANGE);
     }
 
     public static int routeOpacity() {
@@ -102,9 +102,9 @@ public final class PostalConfig {
     }
 
     public enum LineTheme {
-        /** Strong route blue, the default. */
-        BLUE,
-        /** Warm postal amber. */
+        /** Postal orange, the default. */
+        ORANGE,
+        /** Warm amber. */
         AMBER,
         /** Cool teal. */
         TEAL
@@ -147,7 +147,7 @@ public final class PostalConfig {
 
             this.lineTheme = builder
                 .comment("Colour palette for postal routes.")
-                .defineEnum("lineTheme", LineTheme.BLUE);
+                .defineEnum("lineTheme", LineTheme.ORANGE);
 
             this.routeOpacity = builder
                 .comment("Opacity of postal routes, 0-100.")

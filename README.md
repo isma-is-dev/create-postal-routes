@@ -19,7 +19,7 @@ but the moment your base grows you lose track of it.
 
 This addon reads that network on the server and mirrors it onto Xaero's World Map:
 
-* **Postal routes** — every chain conveyor link, drawn as a solid blue line with a dark outline with an
+* **Postal routes** — every chain conveyor link, drawn as a solid orange line with a dark outline with an
   elevation-aware shadow.
 * **Ports** — frogports, postboxes and station mail ports as envelope icons. Hover one to
   see its address and whether it accepts packages.
@@ -59,7 +59,7 @@ decides what to send; the client decides what to draw.
 
 | Element | Meaning |
 |---|---|
-| Solid blue line, dark outline | A chain conveyor link between two chain conveyors |
+| Solid orange line, dark outline | A chain conveyor link between two chain conveyors |
 | Stronger line | Higher elevation (same convention as Create's train map) |
 | Amber envelope | Frogport attached to a chain conveyor |
 | Teal envelope | Postbox |
